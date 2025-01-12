@@ -1,0 +1,29 @@
+# Python virtual environments
+venv/
+env/
+*.pyc
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Dataset directory
+CK/
+
+# Model weights
+*.h5
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Development tools
+.vscode/
+.idea/
+
+# Local configuration files
+config.ini
