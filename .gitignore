@@ -1,29 +1,22 @@
-# Python virtual environments
-venv/
-env/
+# Ignore Python compiled files
 *.pyc
 
-# Jupyter notebook checkpoints
-.ipynb_checkpoints/
+# Ignore virtual environment
+myenv/
+venv/
 
-# Dataset directory
-CK/
-
-# Model weights
+# Ignore model weights
 *.h5
 
-# OS generated files
-.DS_Store
-Thumbs.db
+# Ignore uploads
+uploads/
 
-# Logs and databases
-*.log
-*.sql
-*.sqlite
+# ignore dataset
+CK/
 
-# Development tools
-.vscode/
-.idea/
+# Ignore directories not needed in the repository
+__pycache__/
+node_modules/  # If you use Node.js
 
-# Local configuration files
-config.ini
+# System files
+
