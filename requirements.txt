@@ -1,0 +1,8 @@
+tensorflow
+opencv-python
+numpy
+matplotlib
+google-api-python-client
+flask
+Werkzeug
+scikit-learn
