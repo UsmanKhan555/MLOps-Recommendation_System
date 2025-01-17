@@ -1,9 +1,7 @@
 pipeline {
     agent any
 
-    environment {
-        YOUTUBE_API_KEY = credentials('AIzaSyA-LJ5wh7JlVriUUGHXDyJcofOLrf7gpZc')
-    }
+
 
     stages {
         stage('Cloning Git Repository') {
