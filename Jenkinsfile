@@ -19,12 +19,13 @@ pipeline {
         }
 
 
-        // stage('Install Dependencies') {
-        //     steps {
-        //         echo 'Installing dependencies...'
-        //         // sh 'pip install -r requirements.txt'
-        //     }
-        // }
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies...'
+                sh "python -m pip install --upgrade pip --break-system-packages"
+                sh "python -m pip install --break-system-packages -r requirements.txt"
+            }
+        }
 
         // stage('Run Tests') {
         //     steps {
