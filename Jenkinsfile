@@ -22,6 +22,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
+                sh 'sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx'
                 sh "python -m pip install --upgrade pip --break-system-packages"
                 sh "python -m pip install --break-system-packages -r requirements.txt"
             }
