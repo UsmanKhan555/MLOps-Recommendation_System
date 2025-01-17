@@ -1,15 +1,22 @@
 pipeline {
     agent any
 
-    // environment {
-    //     YOUTUBE_API_KEY = credentials('AIzaSyA-LJ5wh7JlVriUUGHXDyJcofOLrf7gpZc')
-    // }
+    environment {
+        YOUTUBE_API_KEY = credentials('AIzaSyA-LJ5wh7JlVriUUGHXDyJcofOLrf7gpZc')
+    }
 
     stages {
         stage('Cloning Git Repository') {
             steps {
-                echo 'Cloning repository...'
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'mlops-git-token', url: 'https://github.com/UsmanKhan555/MLOps-Recommendation_System.git']])
+                // Using the credentials to checkout the code
+                checkout([
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/main']], 
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/UsmanKhan555/MLOps-Recommendation_System.git',  
+                        credentialsId: 'mlops-git-token'
+                    ]]
+                ])
             }
         }
 
