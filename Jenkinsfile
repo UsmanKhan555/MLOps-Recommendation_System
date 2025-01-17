@@ -4,6 +4,7 @@ pipeline {
 
 
     stages {
+
         stage('Setup system Dependencies') {
             steps {
                 echo 'Setting up system dependencies...'
@@ -49,6 +50,15 @@ pipeline {
             steps {
                 echo 'Testing the model...'
                 sh 'python src/test.py'
+            }
+        }
+
+        stage('Trivy Scan') {
+            steps {
+                script {
+                    echo "Running Trivy Scan"
+                    sh "trivy fs --format table -o trivy-fs-report.html"
+                }
             }
         }
 
