@@ -1,7 +1,10 @@
 pipeline {
     agent any
 
-
+    environment {
+        DOCKER_HUB_CREDENTIAL_ID = 'mlops-jenkins-dockerhub-token'
+        DOCKERHUB_REGISTRY = 'https://registry.hub.docker.com'
+        DOCKERHUB_REPOSITORY = 'usmankhan555/mlopsapp'    }
 
     stages {
 
@@ -61,6 +64,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    echo 'Building Docker image'
+                    dockerImage = docker.build("${DOCKERHUB_REPOSITORY}:latest")
+                }
+            }
+        }
+
 
         // stage('Deploy Application') {
         //     steps {
