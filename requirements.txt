@@ -6,4 +6,3 @@ google-api-python-client
 flask
 Werkzeug
 scikit-learn
-cv2
