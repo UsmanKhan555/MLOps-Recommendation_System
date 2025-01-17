@@ -12,7 +12,7 @@ venv/
 uploads/
 
 # ignore dataset
-CK/
+
 
 # Ignore directories not needed in the repository
 __pycache__/
