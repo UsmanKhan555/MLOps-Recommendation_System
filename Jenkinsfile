@@ -83,6 +83,16 @@ pipeline {
             }
         }
 
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    echo 'Pushing Docker image to Docker Hub'
+                    docker.withRegistry("${DOCKERHUB_REGISTRY}", "${DOCKER_HUB_CREDENTIAL_ID}") {
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
 
         // stage('Deploy Application') {
         //     steps {
