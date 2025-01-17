@@ -44,6 +44,14 @@ pipeline {
             }
         }
 
+
+        stage('Evaluate Model') {
+            steps {
+                echo 'Testing the model...'
+                sh 'python src/test.py'
+            }
+        }
+
         // stage('Deploy Application') {
         //     steps {
         //         // Add deployment commands here
