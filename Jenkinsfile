@@ -74,6 +74,15 @@ pipeline {
             }
         }
 
+        stage('Trivy Docker Image scan') {
+            steps {
+                script {
+                    echo "Running Trivy Docker Image Scan"
+                    sh "trivy image --format table -o trivy-image-report.html ${DOCKERHUB_REPOSITORY}:latest"
+                }
+            }
+        }
+
 
         // stage('Deploy Application') {
         //     steps {
