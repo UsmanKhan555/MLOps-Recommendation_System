@@ -10,9 +10,13 @@ This application uses facial recognition to detect the user's emotion from a pho
 
 pip install -r requirements.txt
 
-## Usage
+## Train
 
 python src/model.py
+
+## Test
+
+python src/test.py
 
 ## Start the Flask Application
 
