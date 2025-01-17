@@ -9,6 +9,7 @@ pipeline {
         stage('Cloning Git Repository') {
             steps {
                 echo 'Cloning repository...'
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'mlops-git-token', url: 'https://github.com/UsmanKhan555/MLOps-Recommendation_System.git']])
             }
         }
 
