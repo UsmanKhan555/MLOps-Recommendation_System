@@ -27,18 +27,13 @@ pipeline {
             }
         }
 
-        // stage('Run Tests') {
-        //     steps {
-        //         // Add your test commands here
-        //         sh 'echo "Run tests here"'
-        //     }
-        // }
 
-        // stage('Train Model') {
-        //     steps {
-        //         sh 'python src/model.py'
-        //     }
-        // }
+        stage('Train Model') {
+            steps {
+                echo 'Training model...'
+                sh 'python src/model.py'
+            }
+        }
 
         // stage('Deploy Application') {
         //     steps {
