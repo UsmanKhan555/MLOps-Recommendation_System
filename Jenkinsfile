@@ -4,6 +4,15 @@ pipeline {
 
 
     stages {
+        stage('Setup system Dependencies') {
+            steps {
+                echo 'Setting up system dependencies...'
+                sh 'sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx libglib2.0-0'
+
+            }
+        }
+
+
         stage('Cloning Git Repository') {
             steps {
                 // Using the credentials to checkout the code
@@ -22,7 +31,6 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx'
                 sh "python -m pip install --upgrade pip --break-system-packages"
                 sh "python -m pip install --break-system-packages -r requirements.txt"
             }
