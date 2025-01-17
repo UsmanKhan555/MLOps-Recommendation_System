@@ -6,12 +6,19 @@ pipeline {
     }
 
     stages {
-        stage('Install Dependencies') {
+        stage('Cloning Git Repository') {
             steps {
-                echo 'Installing dependencies...'
-                // sh 'pip install -r requirements.txt'
+                echo 'Cloning repository...'
             }
         }
+
+
+        // stage('Install Dependencies') {
+        //     steps {
+        //         echo 'Installing dependencies...'
+        //         // sh 'pip install -r requirements.txt'
+        //     }
+        // }
 
         // stage('Run Tests') {
         //     steps {
