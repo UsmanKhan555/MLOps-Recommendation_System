@@ -5,8 +5,7 @@
 myenv/
 venv/
 
-# Ignore model weights
-*.h5
+
 
 # Ignore uploads
 uploads/
