@@ -94,11 +94,16 @@ pipeline {
             }
         }
 
-        // stage('Deploy Application') {
-        //     steps {
-        //         // Add deployment commands here
-        //         sh 'echo "Deploy application commands here"'
-        //     }
-        // }
+        stage('Deploy') {
+            steps {
+                script {
+                    echo 'Deploying the application'
+                     // Fetch the deploy hook URL securely and use it to trigger a deploy
+                    withCredentials([string(credentialsId: 'render-deploy-mlops', variable: 'DEPLOY_HOOK_URL')]) {
+                        sh 'curl -X POST $DEPLOY_HOOK_URL'
+                    }
+                }
+            }
+        }
     }
 }
