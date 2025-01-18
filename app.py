@@ -10,7 +10,6 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # This assumes you have a form for file upload
         file = request.files['file']
         if file:
             filename = secure_filename(file.filename)
