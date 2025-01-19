@@ -4,9 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIAL_ID = 'mlops-jenkins-dockerhub-token'
         DOCKERHUB_REGISTRY = 'https://registry.hub.docker.com'
-        DOCKERHUB_REPOSITORY = 'usmankhan555/mlopsapp'
-        MLFLOW_TRACKING_        URI = 'http://mlflow-server:5000'
-        }
+        DOCKERHUB_REPOSITORY = 'usmankhan555/mlopsapp'    }
 
     stages {
 
