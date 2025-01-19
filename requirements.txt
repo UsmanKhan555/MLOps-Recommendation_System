@@ -7,3 +7,4 @@ flask
 Werkzeug
 scikit-learn
 gunicorn
+mlflow

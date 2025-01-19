@@ -1,7 +1,8 @@
+import mlflow
+from mlflow import pyfunc
 from data_loader import load_and_split_data
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
-from sklearn.model_selection import train_test_split
 import numpy as np
 
 def create_model():
@@ -18,12 +19,26 @@ def create_model():
     return model
 
 def train_model():
-    train_images, test_images, train_labels, test_labels = load_and_split_data('CK') 
-    model = create_model()
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.fit(train_images, train_labels, epochs=10, validation_data=(test_images, test_labels))
-    model.save('models/ckplus_model.h5')
-    print("Model trained and saved.")
+    mlflow.set_tracking_uri('your_tracking_uri')  # Set to your MLflow server URI
+    mlflow.set_experiment('Emotion Detection Model Training')
+
+    with mlflow.start_run():
+        train_images, test_images, train_labels, test_labels = load_and_split_data('CK') 
+        model = create_model()
+        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+        # Train model
+        history = model.fit(train_images, train_labels, epochs=10, validation_data=(test_images, test_labels))
+
+        # Log parameters, metrics, and model
+        mlflow.log_param("epochs", 10)
+        mlflow.log_metric("train_accuracy", history.history['accuracy'][-1])
+        mlflow.log_metric("validation_accuracy", history.history['val_accuracy'][-1])
+
+        # Save and log the model
+        model_path = "models/ckplus_model.h5"
+        model.save(model_path)
+        mlflow.keras.log_model(model, "model", registered_model_name="EmotionDetectionModel")
 
 if __name__ == "__main__":
     train_model()
