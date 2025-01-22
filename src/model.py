@@ -21,7 +21,7 @@ def train_model():
     train_images, test_images, train_labels, test_labels = load_and_split_data('CK') 
     model = create_model()
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.fit(train_images, train_labels, epochs=10, validation_data=(test_images, test_labels))
+    model.fit(train_images, train_labels, epochs=20, validation_data=(test_images, test_labels))
     model.save('models/ckplus_model.h5')
     print("Model trained and saved.")
 
