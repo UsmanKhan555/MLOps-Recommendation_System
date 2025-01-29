@@ -4,34 +4,19 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIAL_ID = 'mlops-jenkins-dockerhub-token'
         DOCKERHUB_REGISTRY = 'https://registry.hub.docker.com'
-        DOCKERHUB_REPOSITORY = 'usmankhan555/mlopsapp'    }
+        DOCKERHUB_REPOSITORY = 'usmankhan555/mlopsapp'
+    }
 
     stages {
-
-        stage('Build') {
-            steps {
-                script {
-                    def startTime = System.currentTimeMillis()
-                    // Your build commands here
-                    def endTime = System.currentTimeMillis()
-                    def duration = endTime - startTime
-                    writeFile file: 'build-duration.csv', text: "Build Duration\n${duration}"
-                }
-            }
-        }
-
         stage('Setup system Dependencies') {
             steps {
                 echo 'Setting up system dependencies...'
                 sh 'sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx libglib2.0-0'
-
             }
         }
 
-
         stage('Cloning Git Repository') {
             steps {
-                // Using the credentials to checkout the code
                 checkout([
                     $class: 'GitSCM', 
                     branches: [[name: '*/main']], 
@@ -43,7 +28,6 @@ pipeline {
             }
         }
 
-
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
@@ -52,14 +36,12 @@ pipeline {
             }
         }
 
-
         stage('Train Model') {
             steps {
                 echo 'Training model...'
                 sh 'python src/model.py'
             }
         }
-
 
         stage('Evaluate Model') {
             steps {
@@ -114,7 +96,6 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying the application'
-                     // Fetch the deploy hook URL securely and use it to trigger a deploy
                     withCredentials([string(credentialsId: 'render-deploy-mlops', variable: 'DEPLOY_HOOK_URL')]) {
                         sh 'curl -X POST $DEPLOY_HOOK_URL'
                     }
@@ -122,13 +103,26 @@ pipeline {
             }
         }
     }
+
     post {
         always {
-            plot csvFileName: 'build-duration.csv', 
-            group: 'Build Metrics', 
-            title: 'Build Duration', 
-            yaxis: 'Milliseconds',
-            style: 'line'  
+            script {
+                // Capture the end time
+                def endTime = System.currentTimeMillis()
+
+                // Calculate the duration
+                def duration = endTime - currentBuild.startTimeInMillis
+
+                // Write the duration to a CSV file
+                writeFile file: 'build-duration.csv', text: "Build Duration (ms)\n${duration}"
+
+                // Generate the plot
+                plot csvFileName: 'build-duration.csv', 
+                     group: 'Build Metrics', 
+                     title: 'Build Duration', 
+                     yaxis: 'Milliseconds',
+                     style: 'line'
+            }
         }
     }
 }
