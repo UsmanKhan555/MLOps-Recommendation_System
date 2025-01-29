@@ -51,7 +51,6 @@ pipeline {
 
         stage('Evaluate Model') {
             steps {
-                sh 'python -m pip install -r requirements.txt'
                 sh 'pytest src/test.py --junitxml=results/test-results.xml'
             }
             post {
