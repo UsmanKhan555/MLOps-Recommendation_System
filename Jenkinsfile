@@ -8,6 +8,18 @@ pipeline {
 
     stages {
 
+        stage('Build') {
+            steps {
+                script {
+                    def startTime = System.currentTimeMillis()
+                    // Your build commands here
+                    def endTime = System.currentTimeMillis()
+                    def duration = endTime - startTime
+                    writeFile file: 'build-duration.csv', text: "Build Duration\n${duration}"
+                }
+            }
+        }
+
         stage('Setup system Dependencies') {
             steps {
                 echo 'Setting up system dependencies...'
@@ -108,6 +120,11 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+    post {
+        always {
+            plot csvFileName: 'build-duration.csv', group: 'Build Metrics', title: 'Build Duration', yaxis: 'Milliseconds'
         }
     }
 }
