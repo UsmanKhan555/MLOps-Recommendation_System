@@ -124,7 +124,11 @@ pipeline {
     }
     post {
         always {
-            plot csvFileName: 'build-duration.csv', group: 'Build Metrics', title: 'Build Duration', yaxis: 'Milliseconds'
+            plot csvFileName: 'build-duration.csv', 
+            group: 'Build Metrics', 
+            title: 'Build Duration', 
+            yaxis: 'Milliseconds',
+            style: 'line'  
         }
     }
 }
