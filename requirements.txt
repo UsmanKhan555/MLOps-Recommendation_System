@@ -8,3 +8,7 @@ Werkzeug
 scikit-learn
 gunicorn
 mlflow
+pytest
+pytest-xdist
+pytest-cov
+

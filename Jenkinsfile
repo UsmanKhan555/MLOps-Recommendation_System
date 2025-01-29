@@ -51,8 +51,13 @@ pipeline {
 
         stage('Evaluate Model') {
             steps {
-                echo 'Testing the model...'
-                sh 'python src/test.py'
+                sh 'python -m pip install -r requirements.txt'
+                sh 'pytest src/test.py --junitxml=results/test-results.xml'
+            }
+            post {
+                always {
+                    junit 'results/test-results.xml'
+                }
             }
         }
 

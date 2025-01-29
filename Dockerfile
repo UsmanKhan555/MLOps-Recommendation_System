@@ -11,11 +11,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt requirements.txt
+COPY requirements.txt .
+# Ensure pytest and related tools are installed
+RUN echo "pytest\npytest-xdist\npytest-cov" >> requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
-COPY app.py .
+COPY . .
 
 # Expose the Flask app port
 EXPOSE 5000
