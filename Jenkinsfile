@@ -116,10 +116,14 @@ pipeline {
                 // Write the duration to a CSV file
                 writeFile file: 'build-duration.csv', text: "Build Duration (ms)\n${duration}"
 
-                // Debug: Print the CSV file content
+                // Set correct permissions for the CSV file
+                sh "chmod 644 build-duration.csv"
+
+                // Debug: Print the CSV file content and permissions
                 echo "CSV File Content:"
-                ls -l ${WORKSPACE}/build-duration.csv
                 sh "cat build-duration.csv"
+                echo "CSV File Permissions:"
+                sh "ls -l build-duration.csv"
 
                 // Generate the plot
                 plot csvFileName: 'build-duration.csv', 
