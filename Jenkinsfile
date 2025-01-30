@@ -130,7 +130,7 @@ pipeline {
                      group: 'Build Metrics', 
                      title: 'Build Duration', 
                      yaxis: 'Milliseconds',
-                     style: 'line'
+                     style: 'bar'
             }
         }
     }
