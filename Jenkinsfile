@@ -118,6 +118,7 @@ pipeline {
 
                 // Debug: Print the CSV file content
                 echo "CSV File Content:"
+                ls -l ${WORKSPACE}/build-duration.csv
                 sh "cat build-duration.csv"
 
                 // Generate the plot
