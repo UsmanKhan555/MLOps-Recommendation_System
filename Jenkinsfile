@@ -116,6 +116,10 @@ pipeline {
                 // Write the duration to a CSV file
                 writeFile file: 'build-duration.csv', text: "Build Duration (ms)\n${duration}"
 
+                // Debug: Print the CSV file content
+                echo "CSV File Content:"
+                sh "cat build-duration.csv"
+
                 // Generate the plot
                 plot csvFileName: 'build-duration.csv', 
                      group: 'Build Metrics', 
