@@ -107,31 +107,31 @@ pipeline {
     }
 
     post {
-        always {
-            script {
-                // Calculate the total duration of the build
-                def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
-                def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
+    always {
+        script {
+            // Calculate the total duration of the build
+            def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
+            def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
 
-                // Write the duration to a CSV file
-                def csvFile = 'build-durations.csv'
-                def content = "Build Number,Duration (s)\n${env.BUILD_NUMBER},${formattedDuration}\n"
-                if (!fileExists(csvFile)) {
-                    writeFile file: csvFile, text: content
-                } else {
-                    appendFile file: csvFile, text: content
-                }
+            // Write or append the duration to a CSV file
+            def csvFile = 'build-durations.csv'
+            def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
 
-                // Publish the CSV file as a build artifact for easy access
-                archiveArtifacts artifacts: csvFile
-
-                // Generate the plot
-                plot csvFileName: csvFile, 
-                     group: 'Build Metrics', 
-                     title: 'Build Duration', 
-                     yaxis: 'Seconds',
-                     style: 'line'  // Change to 'line' to visualize the trend over builds
+            if (fileExists(csvFile)) {
+                // Append to existing file
+                writeFile file: csvFile, text: content, append: true
+            } else {
+                // Create new file and add headers
+                writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
             }
+
+            // Generate the plot
+            plot csvFileName: csvFile, 
+                 group: 'Build Metrics', 
+                 title: 'Build Duration', 
+                 yaxis: 'Seconds',
+                 style: 'line'  // Change to 'line' to visualize the trend over builds
         }
     }
+}
 }
