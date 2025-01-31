@@ -102,35 +102,51 @@ pipeline {
                 }
             }
         }
+
+        stage('Example Build Stage') {
+            steps {
+                script {
+                    def startTime = System.currentTimeMillis()
+                    // Simulate some operations that take time
+                    sh 'sleep 5'  // Replace this with your actual build steps
+                    def endTime = System.currentTimeMillis()
+                    def duration = (endTime - startTime) / 1000  // Duration in seconds
+                    // Write or append the duration to a CSV file
+                    if (!fileExists('build-durations.csv')) {
+                        writeFile file: 'build-durations.csv', text: "Build Number,Duration\n${env.BUILD_NUMBER},${duration}"
+                    } else {
+                        appendFile file: 'build-durations.csv', text: "${env.BUILD_NUMBER},${duration}\n"
+                    }
+                }
+            }
+        }
     }
 
     post {
         always {
             script {
-                // Capture the end time
-                def endTime = System.currentTimeMillis()
-
-                // Calculate the duration
-                def duration = endTime - currentBuild.startTimeInMillis
+                // Calculate the total duration of the build
+                def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
+                def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
 
                 // Write the duration to a CSV file
-                writeFile file: 'build-duration.csv', text: "Build Duration (ms)\n${duration}"
+                def csvFile = 'build-durations.csv'
+                def content = "Build Number,Duration (s)\n${env.BUILD_NUMBER},${formattedDuration}\n"
+                if (!fileExists(csvFile)) {
+                    writeFile file: csvFile, text: content
+                } else {
+                    appendFile file: csvFile, text: content
+                }
 
-                // Set correct permissions for the CSV file
-                sh "chmod 644 build-duration.csv"
-
-                // Debug: Print the CSV file content and permissions
-                echo "CSV File Content:"
-                sh "cat build-duration.csv"
-                echo "CSV File Permissions:"
-                sh "ls -l build-duration.csv"
+                // Publish the CSV file as a build artifact for easy access
+                archiveArtifacts artifacts: csvFile
 
                 // Generate the plot
-                plot csvFileName: 'build-duration.csv', 
+                plot csvFileName: csvFile, 
                      group: 'Build Metrics', 
                      title: 'Build Duration', 
                      yaxis: 'Seconds',
-                     style: 'bar'
+                     style: 'line'  // Change to 'line' to visualize the trend over builds
             }
         }
     }
