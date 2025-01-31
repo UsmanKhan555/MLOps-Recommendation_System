@@ -103,23 +103,7 @@ pipeline {
             }
         }
 
-        stage('Example Build Stage') {
-            steps {
-                script {
-                    def startTime = System.currentTimeMillis()
-                    // Simulate some operations that take time
-                    sh 'sleep 5'  // Replace this with your actual build steps
-                    def endTime = System.currentTimeMillis()
-                    def duration = (endTime - startTime) / 1000  // Duration in seconds
-                    // Write or append the duration to a CSV file
-                    if (!fileExists('build-durations.csv')) {
-                        writeFile file: 'build-durations.csv', text: "Build Number,Duration\n${env.BUILD_NUMBER},${duration}"
-                    } else {
-                        appendFile file: 'build-durations.csv', text: "${env.BUILD_NUMBER},${duration}\n"
-                    }
-                }
-            }
-        }
+       
     }
 
     post {
