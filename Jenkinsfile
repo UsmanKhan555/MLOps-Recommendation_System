@@ -141,7 +141,7 @@ pipeline {
                      title: 'Build Duration Over Time', 
                      yaxis: 'Duration (s)',
                      style: 'line',  // Use 'line' for a line chart
-                     series: [[
+                     csvSeries: [[
                          file: 'build-durations.csv',
                          label: 'Build Duration',
                          inclusionFlag: 'OFF'
