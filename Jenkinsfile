@@ -115,8 +115,8 @@ pipeline {
                     def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
 
                     if (fileExists(csvFile)) {
-                        // Append to existing file
-                        writeFile file: csvFile, text: content, append: true
+                        // Append to existing file using shell command
+                        sh "echo '${content}' >> ${csvFile}"
                     } else {
                         // Create new file and add headers
                         writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
@@ -143,7 +143,6 @@ pipeline {
                      style: 'line',  // Use 'line' for a line chart
                      csvSeries: [[
                          file: 'build-durations.csv',
-                         label: 'Build Duration',
                          inclusionFlag: 'OFF'
                      ]]
             }
