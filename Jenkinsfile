@@ -103,65 +103,50 @@ pipeline {
             }
         }
 
-        stage ('Debug CSV') {
+        stage('Generate CSV') {
             steps {
-            sh 'cat build-durations.csv'
-        }
-        }
-        stage ('Check File Permissions') {
-            steps {
-            sh 'ls -l build-durations.csv || echo "File not found!"'
+                script {
+                    // Calculate the total duration of the build
+                    def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
+                    def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
+
+                    // Write or append the duration to a CSV file
+                    def csvFile = 'build-durations.csv'
+                    def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
+
+                    if (fileExists(csvFile)) {
+                        // Append to existing file
+                        writeFile file: csvFile, text: content, append: true
+                    } else {
+                        // Create new file and add headers
+                        writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
+                    }
+                }
             }
         }
 
-        stage ('Building plot') {
-            agent any
+        stage('Fix File Permissions') {
             steps {
-                plot csvFileName: 'plot-buildd-durations.csv', 
-                    csvSeries: [[
-                        width: 1600,
-                        height: 1600,
-                        displayTableFlag: false, 
-                        exclusionValues: '', 
-                        file: 'build-durations.csv',  // Explicitly reference the file in root
-                        inclusionFlag: 'OFF', 
-                        url: ''
-                    ]], 
-                    group: 'BuildPerformanceMetrics', 
-                    keepRecords: true,
-                    numBuilds: '50', 
-                    style: 'lineSimple', 
-                    title: 'Build Durations Over Time',
-                    yaxis: 'Build Duration (seconds)'
-            }          
-}
+                script {
+                    sh 'chown jenkins:jenkins build-durations.csv || echo "File not found!"'
+                    sh 'chmod 644 build-durations.csv || echo "File not found!"'
+                }
+            }
+        }
 
-    // post {
-    // always {
-    //     script {
-    //         // Calculate the total duration of the build
-    //         def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
-    //         def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
-
-    //         // Write or append the duration to a CSV file
-    //         def csvFile = 'build-durations.csv'
-    //         def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
-
-    //         if (fileExists(csvFile)) {
-    //             // Append to existing file
-    //             writeFile file: csvFile, text: content, append: true
-    //         } else {
-    //             // Create new file and add headers
-    //             writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
-    //         }
-
-    //         // Generate the plot
-    //         plot csvFileName: csvFile, 
-    //              group: 'Build Metrics', 
-    //              title: 'Build Duration', 
-    //              yaxis: 'Seconds',
-    //              style: 'line'  // Change to 'line' to visualize the trend over builds
-    //     }
-    // }
-}
+        stage('Building plot') {
+            steps {
+                plot csvFileName: 'build-durations.csv', 
+                     group: 'Build Metrics', 
+                     title: 'Build Duration Over Time', 
+                     yaxis: 'Duration (s)',
+                     style: 'line',  // Use 'line' for a line chart
+                     series: [[
+                         file: 'build-durations.csv',
+                         label: 'Build Duration',
+                         inclusionFlag: 'OFF'
+                     ]]
+            }
+        }
+    }
 }
