@@ -103,6 +103,11 @@ pipeline {
             }
         }
 
+        stage ('Debug CSV') {
+    steps {
+        sh 'cat build-durations.csv'
+    }
+}
         stage ('Building plot') {
             agent any
             steps {
