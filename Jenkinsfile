@@ -125,14 +125,6 @@ pipeline {
             }
         }
 
-        stage('Fix File Permissions') {
-            steps {
-                script {
-                    sh 'chown jenkins:jenkins build-durations.csv || echo "File not found!"'
-                    sh 'chmod 644 build-durations.csv || echo "File not found!"'
-                }
-            }
-        }
 
         stage('Building plot') {
             steps {
