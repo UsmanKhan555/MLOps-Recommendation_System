@@ -117,13 +117,13 @@ pipeline {
         stage ('Building plot') {
             agent any
             steps {
-                plot csvFileName: 'plot-build-durations.csv', 
+                plot csvFileName: 'plot-buildd-durations.csv', 
                     csvSeries: [[
                         width: 1600,
                         height: 1600,
                         displayTableFlag: false, 
                         exclusionValues: '', 
-                        file: './build-durations.csv',  // Explicitly reference the file in root
+                        file: 'build-durations.csv',  // Explicitly reference the file in root
                         inclusionFlag: 'OFF', 
                         url: ''
                     ]], 
