@@ -104,16 +104,16 @@ pipeline {
         }
 
         stage ('Debug CSV') {
-    steps {
-        sh 'cat build-durations.csv'
-    }
+            steps {
+            sh 'cat build-durations.csv'
+        }
+        }
+        stage ('Check File Permissions') {
+            steps {
+            sh 'ls -l build-durations.csv || echo "File not found!"'
+            }
+        }
 
-    stage ('Check File Permissions') {
-    steps {
-        sh 'ls -l build-durations.csv || echo "File not found!"'
-    }
-}
-}
         stage ('Building plot') {
             agent any
             steps {
