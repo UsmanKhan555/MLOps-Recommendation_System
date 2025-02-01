@@ -104,25 +104,26 @@ pipeline {
         }
 
         stage ('Building plot') {
+            agent any
             steps {
-            plot csvFileName: 'plot-build-durations.csv', 
-                csvSeries: [[
-                    width: 1600,
-                    height: 1600,
-                    displayTableFlag: false, 
-                    exclusionValues: '', 
-                    file: 'build-durations.csv', 
-                    inclusionFlag: 'OFF', 
-                    url: ''
-                ]], 
-                group: 'BuildPerformanceMetrics', 
-                keepRecords: true,
-                numBuilds: '50', 
-                style: 'lineSimple', 
-                title: 'Build Durations Over Time',
-                yaxis: 'Build Duration (seconds)'
-                }      
-        }
+                plot csvFileName: 'plot-build-durations.csv', 
+                    csvSeries: [[
+                        width: 1600,
+                        height: 1600,
+                        displayTableFlag: false, 
+                        exclusionValues: '', 
+                        file: './build-durations.csv',  // Explicitly reference the file in root
+                        inclusionFlag: 'OFF', 
+                        url: ''
+                    ]], 
+                    group: 'BuildPerformanceMetrics', 
+                    keepRecords: true,
+                    numBuilds: '50', 
+                    style: 'lineSimple', 
+                    title: 'Build Durations Over Time',
+                    yaxis: 'Build Duration (seconds)'
+            }          
+}
 
     // post {
     // always {
