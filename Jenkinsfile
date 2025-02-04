@@ -110,7 +110,7 @@ pipeline {
                     def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
                     def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
 
-                    // Define the CSV file path
+                    // Write or append the duration to a CSV file
                     def csvFile = 'build-durations.csv'
                     def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
 
@@ -125,6 +125,7 @@ pipeline {
             }
         }
 
+
         stage('Building plot') {
             steps {
                 plot csvFileName: 'build-durations.csv', 
@@ -133,12 +134,11 @@ pipeline {
                      yaxis: 'Duration (s)',
                      style: 'line',
                      csvSeries: [[
-                         file: 'build-durations.csv',
-                         label: 'Build Duration',
-                         inclusionFlag: 'INCLUDE_BY_STRING', // Ensure correct column selection
-                         inclusionValues: 'Duration (s)',  // Include only the second column
-                         exclusionValues: ''
-                     ]]
+                        file: 'build-durations.csv',
+                        inclusionFlag: 'INCLUDE_BY_STRING',
+                        label: 'Duration (s)',  // Manually setting the series label
+                        exclusionValues: ''
+                    ]]
             }
         }
     }
