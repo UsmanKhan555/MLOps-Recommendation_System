@@ -105,21 +105,22 @@ pipeline {
 
 
         stage('Building plot') {
-    steps {
-        def duration = currentBuild.duration / 1000
-        plot([
-            plot: [
-                title: 'Build Duration',
-                style: 'line',
-                series: [[
-                    file: 'plot.properties',
-                    key: 'duration',
-                    value: duration,
-                    label: 'Duration (s)'
-                ]]
-            ]
-        ])
-    }
-}
+            steps {
+                script {
+                    def duration = currentBuild.duration / 1000
+                    plot(
+                        group: 'Build Metrics',
+                        title: 'Build Duration',
+                        style: 'line',
+                        series: [[
+                            file: 'plot.properties',
+                            displayTableFlag: false,
+                            label: 'Duration (s)',
+                            data: [[duration]]
+                        ]]
+                    )
+                }
+            }
+        }
     }
 }
