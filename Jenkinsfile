@@ -103,33 +103,23 @@ pipeline {
             }
         }
 
-        stage('Generate CSV') {
-    steps {
-        script {
-            def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
-            def formattedDuration = buildDuration / 1000
-            def csvFile = 'build-durations.csv'
-            
-            if (!fileExists(csvFile)) {
-                writeFile file: csvFile, text: "Build Number,Duration (s)\n"
-            }
-            
-            sh "echo '${env.BUILD_NUMBER},${formattedDuration}' >> ${csvFile}"
-        }
-    }
-}
 
         stage('Building plot') {
-                steps {
-                    plot csvFileName: 'plot.csv',
-                        csvSeries: [[
-                            file: 'build-durations.csv',
-                            displayTableFlag: false
-                        ]],
-                        group: 'Build Metrics',
-                        title: 'Build Duration Over Time',
-                        style: 'line'
-                }
-            }
+    steps {
+        def duration = currentBuild.duration / 1000
+        plot([
+            plot: [
+                title: 'Build Duration',
+                style: 'line',
+                series: [[
+                    file: 'plot.properties',
+                    key: 'duration',
+                    value: duration,
+                    label: 'Duration (s)'
+                ]]
+            ]
+        ])
+    }
+}
     }
 }
