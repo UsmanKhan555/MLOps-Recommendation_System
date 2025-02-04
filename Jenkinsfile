@@ -103,6 +103,7 @@ pipeline {
             }
         }
 
+        stages {
         stage('Generate CSV') {
             steps {
                 script {
@@ -135,7 +136,7 @@ pipeline {
                      style: 'line',
                      csvSeries: [[
                          file: 'build-durations.csv',
-                         exclusionValues: '' // ✅ Removed `label`
+                         inclusionFlag: 'OFF' // ✅ Ensures proper parsing
                      ]]
             }
         }
