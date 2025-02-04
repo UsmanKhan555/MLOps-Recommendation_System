@@ -104,45 +104,40 @@ pipeline {
         }
 
         stage('Generate CSV') {
-            steps {
-                script {
-                    // Calculate the total duration of the build
-                    def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
-                    def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
+    steps {
+        script {
+            // Calculate the total duration of the build
+            def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
+            def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
 
-                    // Write or append the duration to a CSV file
-                    def csvFile = 'build-durations.csv'
-                    def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
+            // Write or append the duration to a CSV file
+            def csvFile = 'build-durations.csv'
+            def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
 
-                    if (fileExists(csvFile)) {
-                        // Append to existing file using shell command
-                        sh "echo '${content}' >> ${csvFile}"
-                    } else {
-                        // Create new file and add headers
-                        writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
-                    }
-                }
+            if (fileExists(csvFile)) {
+                // Append to existing file using shell command
+                sh "echo '${content}' >> ${csvFile}"
+            } else {
+                // Create new file and add headers
+                writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
             }
+        }
+    }
 }
 
 
-                stage('Building plot') {
-                    steps {
-                        plot csvFileName: 'build-durations.csv',
-                            group: 'Build Metrics',
-                            title: 'Build Duration Over Time',
-                            yaxis: 'Duration (s)',
-                            style: 'line',
-                            csvSeries: [[
-                                displayTableFlag: false,
-                                exclusionValues: '',
-                                file: 'build-durations.csv',
-                                inclusionFlag: 'INCLUDE_BY_STRING',
-                                url: '',
-                                xaxis: 'Build Number',
-                                yaxis: 'Duration (s)'
-                            ]]
-                    }
-                }
+        stage('Building plot') {
+    steps {
+        plot csvFileName: 'build-durations.csv', 
+             group: 'Build Metrics', 
+             title: 'Build Duration Over Time', 
+             yaxis: 'Duration (s)',
+             style: 'line',  // Use 'line' for a line chart
+             csvSeries: [[
+                 file: 'build-durations.csv',
+                 inclusionFlag: 'OFF'
+             ]]
+    }
+}
     }
 }
