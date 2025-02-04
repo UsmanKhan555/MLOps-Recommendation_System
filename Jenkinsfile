@@ -103,7 +103,6 @@ pipeline {
             }
         }
 
-        stages {
         stage('Generate CSV') {
             steps {
                 script {
@@ -142,6 +141,5 @@ pipeline {
                      ]]
             }
         }
-    }
     }
 }
