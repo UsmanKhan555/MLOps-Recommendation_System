@@ -113,11 +113,11 @@ pipeline {
                     def csvFile = 'build-durations.csv'
 
                     if (fileExists(csvFile)) {
-                        // Append only build duration
+                        // Append only build duration (ensure consistent format)
                         sh "echo '${buildDuration}' >> ${csvFile}"
                     } else {
-                        // Create new file with only build duration values
-                        writeFile file: csvFile, text: "${buildDuration}\n"
+                        // Create new file with headers
+                        writeFile file: csvFile, text: "Duration (s)\n${buildDuration}\n"
                     }
 
                     // Debug: Print CSV content in logs
@@ -135,8 +135,7 @@ pipeline {
                      style: 'line',
                      csvSeries: [[
                          file: 'build-durations.csv',
-                         label: 'Build Duration',
-                         exclusionValues: '' // Ensures only the duration is plotted
+                         exclusionValues: '' // ✅ Removed `label`
                      ]]
             }
         }
