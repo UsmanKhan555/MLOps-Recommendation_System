@@ -132,11 +132,13 @@ pipeline {
                      group: 'Build Metrics', 
                      title: 'Build Duration Over Time', 
                      yaxis: 'Duration (s)',
-                     style: 'line',  // Use 'line' for a line chart
+                     style: 'line',
                      csvSeries: [[
-                         file: 'build-durations.csv',
-                         inclusionFlag: 'OFF'
-                     ]]
+                        file: 'build-durations.csv',
+                        displayTableFlag: true,
+                        inclusionFlag: 'INCLUDE_BY_STRING',
+                        exclusionValues: ''
+                    ]]
             }
         }
     }
