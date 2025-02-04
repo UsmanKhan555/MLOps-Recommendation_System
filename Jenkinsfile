@@ -111,7 +111,7 @@ pipeline {
 
                     // Define CSV file path
                     def csvFile = 'build-durations.csv'
-                    def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
+                    def content = "${env.BUILD_NUMBER},${buildDuration}\n"
 
                     if (fileExists(csvFile)) {
                         // Append data
@@ -137,8 +137,8 @@ pipeline {
                      csvSeries: [[
                          file: 'build-durations.csv',
                          label: 'Build Duration',
-                         inclusionFlag: 'COLUMN', // ✅ Fix: Only plot "Duration (s)"
-                         inclusionValues: 'Duration (s)' // ✅ Fix: Ignore Build Number
+                         inclusionFlag: 'COLUMN', 
+                         inclusionValues: 'Duration (s)' 
                      ]]
             }
         }
