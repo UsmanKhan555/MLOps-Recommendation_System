@@ -135,8 +135,8 @@ pipeline {
                      style: 'line',
                      csvSeries: [[
                         file: 'build-durations.csv',
-                        displayTableFlag: true,
                         inclusionFlag: 'INCLUDE_BY_STRING',
+                        label: 'Duration (s)',  // Manually setting the series label
                         exclusionValues: ''
                     ]]
             }
