@@ -106,23 +106,22 @@ pipeline {
         stage('Generate CSV') {
             steps {
                 script {
-                    // Calculate the total duration of the build
-                    def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
-                    def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
+                    // Calculate build duration in seconds
+                    def buildDuration = (System.currentTimeMillis() - currentBuild.startTimeInMillis) / 1000
 
                     // Define CSV file path
                     def csvFile = 'build-durations.csv'
                     def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
 
                     if (fileExists(csvFile)) {
-                        // Append to existing file
+                        // Append data
                         sh "echo '${content}' >> ${csvFile}"
                     } else {
-                        // Create a new file with headers
+                        // Create file with headers
                         writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
                     }
 
-                    // Debugging: Print the CSV content to Jenkins logs
+                    // Debug: Print CSV content in logs
                     sh "cat ${csvFile}"
                 }
             }
@@ -137,7 +136,9 @@ pipeline {
                      style: 'line',
                      csvSeries: [[
                          file: 'build-durations.csv',
-                         label: 'Build Duration' // Label to differentiate in the UI
+                         label: 'Build Duration',
+                         inclusionFlag: 'COLUMN', // ✅ Fix: Only plot "Duration (s)"
+                         inclusionValues: 'Duration (s)' // ✅ Fix: Ignore Build Number
                      ]]
             }
         }
