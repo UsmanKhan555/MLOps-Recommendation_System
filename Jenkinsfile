@@ -104,40 +104,32 @@ pipeline {
         }
 
         stage('Generate CSV') {
-            steps {
-                script {
-                    // Calculate build duration in seconds
-                    def buildDuration = (System.currentTimeMillis() - currentBuild.startTimeInMillis) / 1000
-
-                    // Define CSV file path
-                    def csvFile = 'build-durations.csv'
-
-                    if (fileExists(csvFile)) {
-                        // Append only build duration (ensure consistent format)
-                        sh "echo '${buildDuration}' >> ${csvFile}"
-                    } else {
-                        // Create new file with headers
-                        writeFile file: csvFile, text: "Duration (s)\n${buildDuration}\n"
-                    }
-
-                    // Debug: Print CSV content in logs
-                    sh "cat ${csvFile}"
-                }
+    steps {
+        script {
+            def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
+            def formattedDuration = buildDuration / 1000
+            def csvFile = 'build-durations.csv'
+            
+            if (!fileExists(csvFile)) {
+                writeFile file: csvFile, text: "Build Number,Duration (s)\n"
             }
+            
+            sh "echo '${env.BUILD_NUMBER},${formattedDuration}' >> ${csvFile}"
         }
+    }
+}
 
         stage('Building plot') {
-            steps {
-                plot csvFileName: 'build-durations.csv', 
-                     group: 'Build Metrics', 
-                     title: 'Build Duration Over Time', 
-                     yaxis: 'Duration (s)',
-                     style: 'line',
-                     csvSeries: [[
-                         file: 'build-durations.csv',
-                         inclusionFlag: 'OFF' // ✅ Ensures proper parsing
-                     ]]
+                steps {
+                    plot csvFileName: 'plot.csv',
+                        csvSeries: [[
+                            file: 'build-durations.csv',
+                            displayTableFlag: false
+                        ]],
+                        group: 'Build Metrics',
+                        title: 'Build Duration Over Time',
+                        style: 'line'
+                }
             }
-        }
     }
 }
