@@ -148,6 +148,7 @@ pipeline {
                      title: 'Build Duration Over Time', 
                      yaxis: 'Duration (s)',
                      style: 'line',
+                     showLegend: false,
                      csvSeries: [[file: 'build-durations.csv', inclusionFlag: 'OFF']]
             }
         }
@@ -157,16 +158,15 @@ pipeline {
                 plot csvFileName: 'build-success-rate.csv', 
                      group: 'Build Metrics', 
                      title: 'Build Success Rate Over Time', 
-                     yaxis: 'Success (1=pass, 0=fail)',
+                     yaxis: 'Success Rate',
                      style: 'bar',
-                     csvSeries: [[file: 'build-success-rate.csv', inclusionFlag: 'OFF']]
+                     csvSeries: [[file: 'build-success-rate.csv', inclusionFlag: 'OFF',display:'All']]
             }
         }
     }
     post {
         always {
             script {
-                // ✅ Capture build success (1) or failure (0)
                 def buildStatus = currentBuild.result == null || currentBuild.result == 'SUCCESS' ? 1 : 0
                 def successFile = 'build-success-rate.csv'
 
@@ -176,6 +176,6 @@ pipeline {
                     writeFile file: successFile, text: "Success (1=pass, 0=fail)\n${buildStatus}\n"
                 }
             }
-        
+        }
     }
 }
