@@ -140,4 +140,68 @@ pipeline {
             }
         }
     }
+
+    stages {
+        stage('Generate CSV - Build Duration') {
+            steps {
+                script {
+                    // Calculate build duration in seconds
+                    def buildDuration = (System.currentTimeMillis() - currentBuild.startTimeInMillis) / 1000
+                    def durationFile = 'build-durations.csv'
+
+                    if (fileExists(durationFile)) {
+                        sh "echo '${buildDuration}' >> ${durationFile}"
+                    } else {
+                        writeFile file: durationFile, text: "Duration (s)\n${buildDuration}\n"
+                    }
+
+                    // Debugging: Show CSV content
+                    sh "cat ${durationFile}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // ✅ Capture build success (1) or failure (0)
+                def buildStatus = currentBuild.result == null || currentBuild.result == 'SUCCESS' ? 1 : 0
+                def successFile = 'build-success-rate.csv'
+
+                if (fileExists(successFile)) {
+                    sh "echo '${buildStatus}' >> ${successFile}"
+                } else {
+                    writeFile file: successFile, text: "Success (1=pass, 0=fail)\n${buildStatus}\n"
+                }
+
+                // Debugging: Show CSV content
+                sh "cat ${successFile}"
+            }
+        }
+    }
+
+    stages {
+        stage('Visualize Build Duration') {
+            steps {
+                plot csvFileName: 'build-durations.csv', 
+                     group: 'Build Metrics', 
+                     title: 'Build Duration Over Time', 
+                     yaxis: 'Duration (s)',
+                     style: 'line',
+                     csvSeries: [[file: 'build-durations.csv', inclusionFlag: 'OFF']]
+            }
+        }
+
+        stage('Visualize Success Rate') {
+            steps {
+                plot csvFileName: 'build-success-rate.csv', 
+                     group: 'Build Metrics', 
+                     title: 'Build Success Rate Over Time', 
+                     yaxis: 'Success (1=pass, 0=fail)',
+                     style: 'bar',
+                     csvSeries: [[file: 'build-success-rate.csv', inclusionFlag: 'OFF']]
+            }
+        }
+    }
 }
