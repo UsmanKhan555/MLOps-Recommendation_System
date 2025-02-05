@@ -103,78 +103,38 @@ pipeline {
             }
         }
 
-        stage('Generate CSV') {
+       stage('Build') {
             steps {
                 script {
-                    // Calculate the total duration of the build
-                    def buildDuration = System.currentTimeMillis() - currentBuild.startTimeInMillis
-                    def formattedDuration = buildDuration / 1000  // Convert milliseconds to seconds
+                    def buildStatus = 'SUCCESS'
 
-                    // Write or append the duration to a CSV file
-                    def csvFile = 'build-durations.csv'
-                    def content = "${env.BUILD_NUMBER},${formattedDuration}\n"
-
-                    if (fileExists(csvFile)) {
-                        // Append to existing file using shell command
-                        sh "echo '${content}' >> ${csvFile}"
-                    } else {
-                        // Create new file and add headers
-                        writeFile file: csvFile, text: "Build Number,Duration (s)\n" + content
+                    try {
+                        sh 'echo "Running Build..."'
+                    } catch (Exception e) {
+                        buildStatus = 'FAILURE'
                     }
+
+                    sh """
+                    echo "<html><body><h2>Build Results</h2>" > report.html
+                    echo "<p>Build #${env.BUILD_NUMBER}: <b>${buildStatus}</b></p>" >> report.html
+                    echo "</body></html>" >> report.html
+                    """
                 }
             }
         }
-
-        stage('Generate CSV - Build Duration') {
-            steps {
-                script {
-                    // Calculate build duration in seconds
-                    def buildDuration = (System.currentTimeMillis() - currentBuild.startTimeInMillis) / 1000
-                    def durationFile = 'build-durations.csv'
-
-                    if (fileExists(durationFile)) {
-                        sh "echo '${buildDuration}' >> ${durationFile}"
-                    } else {
-                        writeFile file: durationFile, text: "Duration (s)\n${buildDuration}\n"
-                    }
-                }
-            }
-            
-        }
-        stage('Visualize Build Duration') {
-            steps {
-                plot csvFileName: 'build-durations.csv', 
-                     group: 'Build Metrics', 
-                     title: 'Build Duration Over Time', 
-                     yaxis: 'Duration (s)',
-                     style: 'line',
-                     csvSeries: [[file: 'build-durations.csv', inclusionFlag: 'OFF']]
-            }
-        }
-
-        stage('Visualize Success Rate') {
-            steps {
-                plot csvFileName: 'build-success-rate.csv', 
-                     group: 'Build Metrics', 
-                     title: 'Build Success Rate Over Time', 
-                     yaxis: 'Success Rate',
-                     style: 'bar',
-                     csvSeries: [[file: 'build-success-rate.csv', inclusionFlag: 'OFF',display:'All']]
-            }
-        }
+        
     }
-    post {
+     post {
         always {
-            script {
-                def buildStatus = currentBuild.result == null || currentBuild.result == 'SUCCESS' ? 1 : 0
-                def successFile = 'build-success-rate.csv'
-
-                if (fileExists(successFile)) {
-                    sh "echo '${buildStatus}' >> ${successFile}"
-                } else {
-                    writeFile file: successFile, text: "Success (1=pass, 0=fail)\n${buildStatus}\n"
-                }
-            }
+            publishHTML([target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: '',
+                reportFiles: 'report.html',
+                reportName: 'Build Report'
+            ]])
         }
     }
+    
 }
