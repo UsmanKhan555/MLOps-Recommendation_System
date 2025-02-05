@@ -135,6 +135,6 @@ pipeline {
                 reportName: 'Build Report'
             ]])
         }
-    
+    }
     
 }
