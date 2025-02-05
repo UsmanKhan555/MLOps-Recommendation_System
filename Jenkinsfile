@@ -148,7 +148,6 @@ pipeline {
                      title: 'Build Duration Over Time', 
                      yaxis: 'Duration (s)',
                      style: 'line',
-                     showLegend: false,
                      csvSeries: [[file: 'build-durations.csv', inclusionFlag: 'OFF']]
             }
         }
