@@ -125,21 +125,6 @@ pipeline {
             }
         }
 
-
-        stage('Building plot') {
-            steps {
-                plot csvFileName: 'build-durations.csv', 
-                     group: 'Build Metrics', 
-                     title: 'Build Duration Over Time', 
-                     yaxis: 'Duration (s)',
-                     style: 'line',  // Use 'line' for a line chart
-                     csvSeries: [[
-                         file: 'build-durations.csv',
-                         inclusionFlag: 'OFF'
-                     ]]
-            }
-        }
-
         stage('Generate CSV - Build Duration') {
             steps {
                 script {
