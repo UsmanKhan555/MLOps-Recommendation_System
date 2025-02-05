@@ -139,9 +139,7 @@ pipeline {
                      ]]
             }
         }
-    }
 
-    stages {
         stage('Generate CSV - Build Duration') {
             steps {
                 script {
@@ -159,10 +157,7 @@ pipeline {
                     sh "cat ${durationFile}"
                 }
             }
-        }
-    }
-
-    post {
+            post {
         always {
             script {
                 // ✅ Capture build success (1) or failure (0)
@@ -180,8 +175,7 @@ pipeline {
             }
         }
     }
-
-    stages {
+        }
         stage('Visualize Build Duration') {
             steps {
                 plot csvFileName: 'build-durations.csv', 
