@@ -137,9 +137,6 @@ pipeline {
                     } else {
                         writeFile file: durationFile, text: "Duration (s)\n${buildDuration}\n"
                     }
-
-                    // Debugging: Show CSV content
-                    sh "cat ${durationFile}"
                 }
             }
             post {
@@ -154,9 +151,6 @@ pipeline {
                 } else {
                     writeFile file: successFile, text: "Success (1=pass, 0=fail)\n${buildStatus}\n"
                 }
-
-                // Debugging: Show CSV content
-                sh "cat ${successFile}"
             }
         }
     }
@@ -181,6 +175,6 @@ pipeline {
                      style: 'bar',
                      csvSeries: [[file: 'build-success-rate.csv', inclusionFlag: 'OFF']]
             }
-        }
+        
     }
 }
