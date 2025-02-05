@@ -175,6 +175,6 @@ pipeline {
                      style: 'bar',
                      csvSeries: [[file: 'build-success-rate.csv', inclusionFlag: 'OFF']]
             }
-        
+        }
     }
 }
