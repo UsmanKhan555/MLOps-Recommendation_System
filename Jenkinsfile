@@ -176,6 +176,6 @@ pipeline {
                     writeFile file: successFile, text: "Success (1=pass, 0=fail)\n${buildStatus}\n"
                 }
             }
-        }
+        
     }
 }
