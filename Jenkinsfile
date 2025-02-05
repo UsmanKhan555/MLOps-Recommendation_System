@@ -139,21 +139,7 @@ pipeline {
                     }
                 }
             }
-            post {
-        always {
-            script {
-                // ✅ Capture build success (1) or failure (0)
-                def buildStatus = currentBuild.result == null || currentBuild.result == 'SUCCESS' ? 1 : 0
-                def successFile = 'build-success-rate.csv'
-
-                if (fileExists(successFile)) {
-                    sh "echo '${buildStatus}' >> ${successFile}"
-                } else {
-                    writeFile file: successFile, text: "Success (1=pass, 0=fail)\n${buildStatus}\n"
-                }
-            }
-        }
-    }
+            
         }
         stage('Visualize Build Duration') {
             steps {
@@ -174,6 +160,21 @@ pipeline {
                      yaxis: 'Success (1=pass, 0=fail)',
                      style: 'bar',
                      csvSeries: [[file: 'build-success-rate.csv', inclusionFlag: 'OFF']]
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                // ✅ Capture build success (1) or failure (0)
+                def buildStatus = currentBuild.result == null || currentBuild.result == 'SUCCESS' ? 1 : 0
+                def successFile = 'build-success-rate.csv'
+
+                if (fileExists(successFile)) {
+                    sh "echo '${buildStatus}' >> ${successFile}"
+                } else {
+                    writeFile file: successFile, text: "Success (1=pass, 0=fail)\n${buildStatus}\n"
+                }
             }
         }
     }
