@@ -45,7 +45,7 @@ pipeline {
                         sh 'python src/model.py | tee -a logs/train.log'  // Log output to file
                     } catch (Exception e) {
                         echo "❌ Model training failed!"
-                        sh "echo 'Training failed at $(date)' >> logs/error.log"
+                        sh "echo 'Training failed at \$(date)' >> logs/error.log"
                         error "Stopping pipeline due to training failure"
                     }
                 }
@@ -119,3 +119,4 @@ pipeline {
         }
     }
 }
+            
