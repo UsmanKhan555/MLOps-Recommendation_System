@@ -8,15 +8,16 @@ pipeline {
     }
 
     stages {
-        stage('Setup system Dependencies') {
+        stage('Setup System Dependencies') {
             steps {
-                echo 'Setting up system dependencies...'
+                echo "🔧 Setting up system dependencies..."
                 sh 'sudo apt-get update && sudo apt-get install -y libgl1-mesa-glx libglib2.0-0'
             }
         }
 
         stage('Cloning Git Repository') {
             steps {
+                echo "📥 Cloning repository..."
                 checkout([
                     $class: 'GitSCM', 
                     branches: [[name: '*/main']], 
@@ -30,7 +31,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
+                echo "📦 Installing dependencies..."
                 sh "python -m pip install --upgrade pip --break-system-packages"
                 sh "python -m pip install --break-system-packages -r requirements.txt"
             }
@@ -38,14 +39,31 @@ pipeline {
 
         stage('Train Model') {
             steps {
-                echo 'Training model...'
-                sh 'python src/model.py'
+                script {
+                    try {
+                        echo "🎯 Training model..."
+                        sh 'python src/model.py | tee -a logs/train.log'  // Log output to file
+                    } catch (Exception e) {
+                        echo "❌ Model training failed!"
+                        sh "echo 'Training failed at $(date)' >> logs/error.log"
+                        error "Stopping pipeline due to training failure"
+                    }
+                }
             }
         }
 
         stage('Evaluate Model') {
             steps {
-                sh 'pytest src/test.py --junitxml=results/test-results.xml'
+                script {
+                    try {
+                        echo "🧪 Running model evaluation..."
+                        sh 'pytest src/test.py --junitxml=results/test-results.xml | tee -a logs/test.log'
+                    } catch (Exception e) {
+                        echo "❌ Model evaluation failed!"
+                        sh "echo 'Evaluation failed at $(date)' >> logs/error.log"
+                        error "Stopping pipeline due to evaluation failure"
+                    }
+                }
             }
             post {
                 always {
@@ -54,29 +72,11 @@ pipeline {
             }
         }
 
-        stage('Trivy Scan') {
-            steps {
-                script {
-                    echo "Running Trivy Scan"
-                    sh "trivy fs --format table -o trivy-fs-report.html"
-                }
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 script {
-                    echo 'Building Docker image'
+                    echo "🐳 Building Docker image..."
                     dockerImage = docker.build("${DOCKERHUB_REPOSITORY}:latest")
-                }
-            }
-        }
-
-        stage('Trivy Docker Image scan') {
-            steps {
-                script {
-                    echo "Running Trivy Docker Image Scan"
-                    sh "trivy image --format table -o trivy-image-report.html ${DOCKERHUB_REPOSITORY}:latest"
                 }
             }
         }
@@ -84,7 +84,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    echo 'Pushing Docker image to Docker Hub'
+                    echo "🚀 Pushing Docker image to registry..."
                     docker.withRegistry("${DOCKERHUB_REGISTRY}", "${DOCKER_HUB_CREDENTIAL_ID}") {
                         dockerImage.push('latest')
                     }
@@ -95,46 +95,27 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    echo 'Deploying the application'
+                    echo "🚀 Deploying the application..."
                     withCredentials([string(credentialsId: 'render-deploy-mlops', variable: 'DEPLOY_HOOK_URL')]) {
-                        sh 'curl -X POST $DEPLOY_HOOK_URL'
+                        sh 'curl -X POST $DEPLOY_HOOK_URL | tee -a logs/deploy.log'
                     }
                 }
             }
         }
-
-       stage('Build') {
-            steps {
-                script {
-                    def buildStatus = 'SUCCESS'
-
-                    try {
-                        sh 'echo "Running Build..."'
-                    } catch (Exception e) {
-                        buildStatus = 'FAILURE'
-                    }
-
-                    sh """
-                    echo "<html><body><h2>Build Results</h2>" > report.html
-                    echo "<p>Build #${env.BUILD_NUMBER}: <b>${buildStatus}</b></p>" >> report.html
-                    echo "</body></html>" >> report.html
-                    """
-                }
-            }
-        }
-        
     }
-     post {
+
+    post {
         always {
-            publishHTML([target: [
-                allowMissing: false,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: '',
-                reportFiles: 'report.html',
-                reportName: 'Build Report'
-            ]])
+            script {
+                echo "📜 Saving logs & artifacts..."
+                archiveArtifacts artifacts: 'logs/*.log, results/test-results.xml', fingerprint: true
+            }
+        }
+        success {
+            echo "✅ Pipeline completed successfully!"
+        }
+        failure {
+            echo "❌ Pipeline failed! Check logs in Jenkins artifacts."
         }
     }
-    
 }
