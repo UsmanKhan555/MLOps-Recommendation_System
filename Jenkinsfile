@@ -60,7 +60,7 @@ pipeline {
                         sh 'pytest src/test.py --junitxml=results/test-results.xml | tee -a logs/test.log'
                     } catch (Exception e) {
                         echo "❌ Model evaluation failed!"
-                        sh "echo 'Evaluation failed at $(date)' >> logs/error.log"
+                        sh "echo 'Evaluation failed at \$(date)' >> logs/error.log"
                         error "Stopping pipeline due to evaluation failure"
                     }
                 }
