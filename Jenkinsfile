@@ -40,12 +40,12 @@ pipeline {
         stage('Train Model') {
             steps {
                 script {
+                    echo "🎯 Training model..."
                     try {
-                        echo "🎯 Training model..."
-                        sh 'python src/model.py | tee -a logs/train.log'  // Log output to file
+                        sh 'python src/model.py'
+                        echo "✅ Model training completed successfully!"
                     } catch (Exception e) {
                         echo "❌ Model training failed!"
-                        sh "echo 'Training failed at \$(date)' >> logs/error.log"
                         error "Stopping pipeline due to training failure"
                     }
                 }
@@ -55,12 +55,12 @@ pipeline {
         stage('Evaluate Model') {
             steps {
                 script {
+                    echo "🧪 Running model evaluation..."
                     try {
-                        echo "🧪 Running model evaluation..."
-                        sh 'pytest src/test.py --junitxml=results/test-results.xml | tee -a logs/test.log'
+                        sh 'pytest src/test.py --junitxml=results/test-results.xml'
+                        echo "✅ Model evaluation completed successfully!"
                     } catch (Exception e) {
                         echo "❌ Model evaluation failed!"
-                        sh "echo 'Evaluation failed at \$(date)' >> logs/error.log"
                         error "Stopping pipeline due to evaluation failure"
                     }
                 }
@@ -74,8 +74,8 @@ pipeline {
 
         stage('Docker Build') {
             steps {
+                echo "🐳 Building Docker image..."
                 script {
-                    echo "🐳 Building Docker image..."
                     dockerImage = docker.build("${DOCKERHUB_REPOSITORY}:latest")
                 }
             }
@@ -83,8 +83,8 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
+                echo "🚀 Pushing Docker image to registry..."
                 script {
-                    echo "🚀 Pushing Docker image to registry..."
                     docker.withRegistry("${DOCKERHUB_REGISTRY}", "${DOCKER_HUB_CREDENTIAL_ID}") {
                         dockerImage.push('latest')
                     }
@@ -94,10 +94,11 @@ pipeline {
 
         stage('Deploy') {
             steps {
+                echo "🚀 Deploying the application..."
                 script {
-                    echo "🚀 Deploying the application..."
                     withCredentials([string(credentialsId: 'render-deploy-mlops', variable: 'DEPLOY_HOOK_URL')]) {
-                        sh 'curl -X POST $DEPLOY_HOOK_URL | tee -a logs/deploy.log'
+                        sh 'curl -X POST $DEPLOY_HOOK_URL'
+                        echo "✅ Deployment trigger sent!"
                     }
                 }
             }
@@ -106,17 +107,13 @@ pipeline {
 
     post {
         always {
-            script {
-                echo "📜 Saving logs & artifacts..."
-                archiveArtifacts artifacts: 'logs/*.log, results/test-results.xml', fingerprint: true
-            }
+            echo "📜 Pipeline execution completed!"
         }
         success {
-            echo "✅ Pipeline completed successfully!"
+            echo "✅ Pipeline finished successfully!"
         }
         failure {
-            echo "❌ Pipeline failed! Check logs in Jenkins artifacts."
+            echo "❌ Pipeline failed! Check logs in Jenkins console."
         }
     }
 }
-            
