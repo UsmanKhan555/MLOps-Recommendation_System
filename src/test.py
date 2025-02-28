@@ -11,6 +11,9 @@ def model():
     return load_model('models/ckplus_model.h5')
 
 def test_accuracy(model, load_data):
+    #extract test data
     _, test_images, _, test_labels = load_data
+    # evaluate the model on the test data
     loss, accuracy = model.evaluate(test_images, test_labels, verbose=0)
+    # check if the accuracy is greater than 0.7
     assert accuracy > 0.7 
