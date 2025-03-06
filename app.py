@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from src.predict import predict_emotion
 from src.youtube_search import youtube_search
 from werkzeug.utils import secure_filename
+from src.song_recommender import recommend_songs_by_emotion
 
 
 app = Flask(__name__)
@@ -16,11 +17,8 @@ def index():
             filepath = os.path.join('uploads/', filename)
             file.save(filepath)
             
-            # Predict emotion
-            emotion = predict_emotion(filepath)
-            
-            # Search YouTube
-            videos = youtube_search(emotion + " music")
+            # Get song recommendations based on emotion
+            videos, emotion = recommend_songs_by_emotion(filepath)
             
             return render_template('index.html', videos=videos, emotion=emotion)
     return render_template('index.html')
