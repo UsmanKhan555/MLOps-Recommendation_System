@@ -21,7 +21,7 @@ def create_mobilenetv2_model(input_shape=(48, 48, 3), num_classes=7):
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dense(128, activation='relu')(x)
-    x = Dropout(0.5)(x)
+    x = Dropout(0.5)(x) #ssafe guard against overfitting
     predictions = Dense(num_classes, activation='softmax')(x)
     
     # Create the final model
