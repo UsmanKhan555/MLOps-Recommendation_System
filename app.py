@@ -1,12 +1,15 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from src.predict import predict_emotion
-from src.youtube_search import youtube_search
 from werkzeug.utils import secure_filename
 from src.song_recommender import recommend_songs_by_emotion
 
-
 app = Flask(__name__)
+
+# Ensure upload directory exists
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -14,7 +17,7 @@ def index():
         file = request.files['file']
         if file:
             filename = secure_filename(file.filename)
-            filepath = os.path.join('uploads/', filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             
             # Get song recommendations based on emotion

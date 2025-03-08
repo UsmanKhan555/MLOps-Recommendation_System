@@ -3,10 +3,10 @@ from src.youtube_search import youtube_search
 import random
 
 def recommend_songs_by_emotion(image_path, num_recommendations=5):
-    """
-    Recommends songs based on the emotion detected in a facial image.
-    """
-    # Detect emotion from the face
+    
+    #Recommends songs based on the emotion detected in an image.
+    
+    #deetect emotion directly from the image
     emotion = predict_emotion(image_path)
     
     # Create appropriate search queries based on the detected emotion
@@ -20,7 +20,7 @@ def recommend_songs_by_emotion(image_path, num_recommendations=5):
         'surprise': ['uplifting music', 'exciting music', 'energetic songs']
     }
     
-    # Select a query randomly from the options for the detected emotion
+    # aselect a query randomly from the list for the detected emotion
     query = random.choice(search_queries[emotion])
     
     # Search for songs on YouTube
