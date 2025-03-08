@@ -2,9 +2,9 @@ from src.predict import predict_emotion
 from src.youtube_search import youtube_search
 import random
 
+#Recommends songs based on the emotion detected in an image.
 def recommend_songs_by_emotion(image_path, num_recommendations=5):
     
-    #Recommends songs based on the emotion detected in an image.
     
     #deetect emotion directly from the image
     emotion = predict_emotion(image_path)
