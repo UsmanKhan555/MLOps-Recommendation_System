@@ -57,7 +57,7 @@ pipeline {
                 script {
                     echo "🧪 Running model evaluation..."
                     try {
-                        sh 'pytest sr/test.py --junitxml=results/test-results.xml'
+                        sh 'pytest src/test.py --junitxml=results/test-results.xml'
                         echo "✅ Model evaluation completed successfully!"
                     } catch (Exception e) {
                         echo "❌ Model evaluation failed!"
